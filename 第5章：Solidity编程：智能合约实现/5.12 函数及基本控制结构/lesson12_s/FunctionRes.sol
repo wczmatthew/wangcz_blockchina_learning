@@ -17,7 +17,8 @@ contract FunctionRes {
 
     //test是正常的合约函数，varName可以被赋值
     function test() returns (uint) {
-
+        varName = simpleFunction;
+        return varName(1111);
     }
 }
 
@@ -35,13 +36,24 @@ contract InfoFeed {
 
 contract Consumer {
     InfoFeed feed;
-    //给合约一些以太币
 
+    //给合约一些以太币
+    function deposite() payable returns(uint) {
+        return msg.value;
+    }
 
     //合约的余额
+    function left() returns(uint) {
+        return this.balance;
+    }
 
     //设置合约地址
+    function setFeed(address addr) {
+        feed = InfoFeed(addr);
+    }
 
     //外部调用
-
+    function callfeed() returns(uint) {
+        return feed.info.value(10).gas(100)();
+    }
 }
