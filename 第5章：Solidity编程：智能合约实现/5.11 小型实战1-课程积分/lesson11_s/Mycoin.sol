@@ -24,14 +24,15 @@ contract Mycoin {
     //领取货币，只能一次
     function getCoin() public returns (bool sufficientAndFirstGet) {
         //判断合约是否钱还足够
-
+        if (balances[this] < iniCount) return false;
         //判断是否从合约领取过币
-        
+        if (trans[this][msg.sender].length != 0) return false;
         //领取币
-
+        balances[this] -= iniCount;
+        balances[msg.sender] += iniCount;
 
         //记录交易
-  
+        trans[this][msg.sender].push(iniCount);
 
         //加入用户列表
         if (0 == userDict[msg.sender]) {
@@ -44,9 +45,13 @@ contract Mycoin {
     //发送货币
     function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
         //判断是否有足够的币
-        
+        if (balances[msg.sender] < amount) return false;
         //发生交易
+        balances[msg.sender] -= amount;
+        balances[receiver] += amount;
 
+        //记录交易
+        trans[msg.sender][receiver].push(amount);
 
         //加入用户列表
         if (0 == userDict[receiver]) {
@@ -78,7 +83,14 @@ contract Mycoin {
         uint maxCoin = 0;
 
         //获得币最多的用户地址
-        
+        for (uint i = 0; i < userList.length; i++) {
+            address userAddr = userList[i];
+            uint userCoin = balances[userAddr];
+            if (userCoin > maxCoin) {
+                maxCoin = userCoin;
+                maxAdd = userAddr;
+            }
+        }
         return maxAdd;
     }
 }
